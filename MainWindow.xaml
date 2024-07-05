@@ -1,0 +1,452 @@
+﻿<Window x:Class="HealthAppUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HealthAppUI.UserControls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:uc="clr-namespace:HealthAppUI"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="#fafbfd"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Width="1366" Height="768"
+        WindowState="Maximized"
+        WindowStyle="None"
+        >
+    <Window.Resources>
+        <Style x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="Gray" BorderThickness="1" CornerRadius="10" />
+                            <ContentPresenter Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,4,4,4"/>
+                            <Path Grid.Column="0" Margin="35,0,4,0" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="Black" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="LightGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+        <Style x:Key="CustomComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton 
+                                Name="ToggleButton" 
+                                Style="{StaticResource ComboBoxToggleButton}" 
+                              
+                                Focusable="false"
+                                IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                ClickMode="Press" Background="Transparent"/>
+
+                            <ContentPresenter
+                                Name="ContentSite"
+                                IsHitTestVisible="False"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="10,3,23,3"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left" />
+
+                            <Popup 
+                                Name="Popup"
+                                Placement="Bottom"
+                                IsOpen="{TemplateBinding IsDropDownOpen}"
+                                AllowsTransparency="True" 
+                                Focusable="False"
+                                PopupAnimation="Slide">
+                                <Grid 
+                                    Name="DropDown"
+                                    SnapsToDevicePixels="True"
+                                    MinWidth="{TemplateBinding ActualWidth}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border 
+                                        x:Name="DropDownBorder"
+                                
+                                        BorderThickness="1" />
+                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
+                                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="10"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <!-- Style for the ToggleButton inside the ComboBox -->
+       
+        
+        <Style x:Key="CustomButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2c45fe"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2c45fe"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#2c45fe"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Grid ShowGridLines="False">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="600" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" CornerRadius="0 100 0 0"  Padding="10"  >
+            <Border.Background>
+                <ImageBrush ImageSource="C:\Users\Alienware\RiderProjects\HealthAppUI\Images\bg2.jpg"></ImageBrush>
+            </Border.Background>
+            <StackPanel Orientation="Vertical">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- First Row: Horizontal StackPanel with Icon and Label -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="20 10 20 5">
+                <iconPacks:PackIconMaterial Kind="WeatherSunny" Height="20" Foreground="Yellow" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Label Content="J Health" Foreground="White" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" Margin="5"/>
+            </StackPanel>
+
+            <!-- Second Row: Border with CornerRadius -->
+            <Border Grid.Row="1" CornerRadius="0 35 35 35" Height="90" Width="90" Margin="5 0 5 5 ">
+                <Border.Background>
+                    <ImageBrush ImageSource="C:\Users\Alienware\RiderProjects\HealthAppUI\Images\ft.png"></ImageBrush>
+                </Border.Background>
+            </Border>
+
+            <!-- Third Row: Vertical StackPanel with 2 Labels and a Button -->
+            <StackPanel Grid.Row="2" Orientation="Vertical" Margin="5 0 0 0 ">
+                <Label Content="Jenny Wilson" Foreground="White" HorizontalAlignment="Center" FontWeight="ExtraBlack"  FontSize="20"/>
+                <Label Content="26 y.o" HorizontalAlignment="Center" FontSize="15" FontWeight="DemiBold" Foreground="White" Margin="5"/>
+                <Button Style="{StaticResource CustomButtonStyle}" Height="35" Width="80" Content="#3486274" Background="#2c45fe"  Margin="5"/>
+            </StackPanel>
+
+            <!-- Fourth Row: Vertical StackPanel with 6 Buttons with Icons and Labels -->
+            <StackPanel Grid.Row="3" Orientation="Vertical" Margin="5 35 0 0">
+                <Button  HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="20 5 5 5" Padding="25 0 0 0 ">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <iconPacks:PackIconMaterial Kind="MonitorDashboard" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Label Content="Dashboard" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                    </StackPanel>
+                </Button>
+                <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="20 5 5 5" Padding="25 0 0 0 " >
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="AccessPoint" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Label Content="Appointments" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                    </StackPanel>
+                </Button>
+                <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="20 5 5 5" Padding="25 0 0 0 " >
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="MedicalBag" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Label Content="Medical Report" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                    </StackPanel>
+                </Button>
+                <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="20 5 5 5" Padding="25 0 0 0 " >
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="MedicalCottonSwab" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Label Content="Medical Test" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                    </StackPanel>
+                </Button>
+                <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="20 5 5 5" Padding="25 0 0 0 " >
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="Doctor" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Label Content="Doctors" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                    </StackPanel>
+                </Button>
+                <Button HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="20 5 5 5" Padding="25 0 0 0 " >
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="Calendar" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <Label Content="Calendar" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- Fifth Row: Button with Icon and Label -->
+            <Button  Grid.Row="4" HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Margin="25 50 5 5" Padding="25 0 0 0 " >
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Logout" Height="25" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    <Label Content="Logout" VerticalAlignment="Center" Margin="5" Foreground="White" FontWeight="DemiBold" FontSize="15"/>
+                </StackPanel>
+            </Button>
+        </Grid>        
+            </StackPanel>
+        </Border>
+        
+        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <!-- Row 1 -->
+            <materialDesign:Card Padding="25 5 5 5" Margin="25 25 25 0" Width="250" HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Width="200" BorderBrush="Transparent" Text="Search . . . . " Foreground="Gray"></TextBox>
+                    <iconPacks:PackIconMaterial Kind="SearchWeb" Height="25" Margin="0 0 0 0 " Foreground="Gray" VerticalAlignment="Center" />
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- Row 2 -->
+            <StackPanel Orientation="Horizontal" Margin="25 15 0 0">
+                <Label FontWeight="Bold" FontSize="20">Upcoming</Label>
+                <Label Margin="290 0 0 0" Foreground="Gray" VerticalAlignment="Center" FontWeight="DemiBold">Sort by</Label>
+                <ComboBox Style="{StaticResource CustomComboBoxStyle}"  VerticalAlignment="Center"  SelectedIndex="0">
+                    <ComboBoxItem >Date</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Row 3 -->
+            <materialDesign:Card  Margin="25 15 0 25" Padding="25">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Orientation="Vertical" Grid.Row="0">
+                        <!-- Grid with 2 Rows and 2 Columns inside StackPanel -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        
+                            <!-- Content for the first row, first column -->
+                            <TextBlock Text="Visit an Endocrinologist" FontWeight="Bold" Grid.Row="0" Grid.Column="0"/>
+                        
+                            <!-- Content for the first row, second column -->
+                            <Button HorizontalAlignment="Right" Style="{StaticResource CustomButtonStyle}" Background="#f1f6ff" Width="100" Height="25" Content="Ultrasound" Foreground="Blue"  Grid.Row="0" Grid.Column="1"/>
+                        
+                            <!-- Content for the second row, first column -->
+                            <TextBlock Margin="0 0 0 0 " FontSize="10" Foreground="Gray" FontWeight="DemiBold" TextWrapping="Wrap" Text="Doctors are the silent heroes who dedicate their lives to healing and saving their lives to healing and saving" Grid.Row="1" Grid.Column="0"/>
+                        </Grid>
+                    </StackPanel>
+                
+                    <!-- Second Row -->
+                    <WrapPanel Orientation="Horizontal" Grid.Row="1" Margin="0 10 0 0" >
+                        <local:card1  Width="150" Height="130"></local:card1>
+                        <local:card1 Margin="7 0 7 0" Width="150" Height="130"></local:card1>
+                        <local:card1 Width="150" Height="130"></local:card1>
+                    </WrapPanel>
+                
+                    <!-- Third Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" >
+                        
+                        <Border Background="#f2f3f8" CornerRadius="10" Padding="5" Margin="0 10 5 5 ">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Last Checkup" Foreground="DimGray" />
+                                <Label Content="23.11.2020" Margin="30 0 0 0" FontWeight="Bold" Foreground="Black" />
+                                <iconPacks:PackIconMaterial Kind="DotsVertical" Height="15" Margin="5 0 0 0" Foreground="DimGray" VerticalAlignment="Center" HorizontalAlignment="Center"  />
+                            </StackPanel>
+                        </Border>
+                        
+                        <Button  Style="{StaticResource CustomButtonStyle}"  Width="150" Content="Make an Appointment" FontWeight="DemiBold" Background="#fb7c5c"  Margin="80 5 5 5 "/>
+
+                    </StackPanel>
+
+                </Grid>
+            </materialDesign:Card>
+
+           <materialDesign:Card  Margin="25 -10 0 0" Padding="25">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Orientation="Vertical" Grid.Row="0">
+                        <!-- Grid with 2 Rows and 2 Columns inside StackPanel -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        
+                            <!-- Content for the first row, first column -->
+                            <TextBlock Text="Medical Test" FontWeight="Bold" Grid.Row="0" Grid.Column="0"/>
+                        
+                            <!-- Content for the first row, second column -->
+                            <Button HorizontalAlignment="Right" Style="{StaticResource CustomButtonStyle}" Background="#f1f6ff" Width="100" Height="25" Content="Blood Test , T4" Foreground="Blue"  Grid.Row="0" Grid.Column="1"/>
+                        
+                            <!-- Content for the second row, first column -->
+                            <TextBlock Margin="0 0 0 0 " FontSize="10" Foreground="Gray" FontWeight="DemiBold" TextWrapping="Wrap" Text="Doctors are the silent heroes who dedicate their lives to healing and saving their lives to healing and saving" Grid.Row="1" Grid.Column="0"/>
+                        </Grid>
+                    </StackPanel>
+                
+                    <!-- Second Row -->
+                    <WrapPanel Orientation="Horizontal" Grid.Row="1" Margin="0 10 0 0" >
+                        <local:card1  Width="150" Height="130"></local:card1>
+                        <local:card1 Margin="7 0 7 0" Width="150" Height="130"></local:card1>
+                        <local:card1 Width="150" Height="130"></local:card1>
+                    </WrapPanel>
+                
+                    <!-- Third Row -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0 0 0 0">
+                        
+                        <Border Background="#f2f3f8" CornerRadius="10"  Padding="5" Margin="0 10 5 5 " >
+                            <StackPanel Orientation="Horizontal"  >
+                                <Label Content="Last report" Foreground="DimGray" />
+                                <Border  VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="0 5 5 5" Height="20" Width="20"  Margin="5 0 5 0 " Background="#6563fb" >
+                                    <Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="5" Foreground="White">pdf</Label>
+                                </Border>
+                                <Border   CornerRadius="5 5 0 5" Height="20" Width="20" Background="#dadcfb"  Margin="5 0 5 0 " >
+                                    <Label  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="5" Foreground="#6563fb">doc</Label>
+                                </Border>
+                                <iconPacks:PackIconMaterial Kind="DotsVertical" Height="15" Margin="5 0 0 0" Foreground="DimGray" VerticalAlignment="Center" HorizontalAlignment="Center"  />
+                            </StackPanel>
+                        </Border>
+                        
+                        <Button  Style="{StaticResource CustomButtonStyle}"  Width="150" Content="Make an Appointment" FontWeight="DemiBold" Background="#fb7c5c"  Margin="145 5 5 5 "/>
+
+                    </StackPanel>
+
+                </Grid>
+            </materialDesign:Card>
+        </StackPanel>
+        
+        <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <!-- Row 1 -->
+            <materialDesign:Card Padding="25 5 5 5" Margin="25 25 18 0"  HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Primer icono -->
+                    <iconPacks:PackIconMaterial Kind="Calendar" Height="25" Margin="0 0 5 0" Foreground="Gray" VerticalAlignment="Center" />
+        
+                    <!-- Primer label -->
+                    <Label Content="Monday , 14 Ocotober , 2021" VerticalAlignment="Center" Margin="0 0 5 0"/>
+        
+                    <!-- Segundo icono -->
+                    <iconPacks:PackIconMaterial Kind="Clock" Height="25" Margin="0 0 5 0" Foreground="Gray" VerticalAlignment="Center" />
+        
+                    <!-- Segundo label -->
+                    <Label Content="08:50 AM" VerticalAlignment="Center" Margin="0 0 5 0"/>
+        
+                    <!-- Botón -->
+                    <Button  Style="{StaticResource CustomButtonStyle}"  Width="35"  FontWeight="DemiBold" Background="#fb7c5c" >
+                        <StackPanel Orientation="Horizontal" >
+                            <iconPacks:PackIconMaterial Kind="BellAlert" Height="25" Margin="0 0 0 0 " Foreground="White" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </materialDesign:Card>
+
+
+            <!-- Row 2 -->
+            <StackPanel Orientation="Horizontal" Margin="25 15 0 0">
+                <Label FontWeight="Bold" FontSize="20">Today</Label>
+                <Button  Style="{StaticResource CustomButtonStyle}"  Width="100"  FontWeight="DemiBold" Background="#fb7c5c"  Margin="280 5 5 5 ">
+                    <StackPanel Orientation="Horizontal" >
+                        <Label Foreground="White">View All</Label>
+                        <iconPacks:PackIconMaterial Kind="ArrowRight" Height="25" Margin="0 0 0 0 " Foreground="White" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+
+            <!-- Row 3 -->
+            <WrapPanel Orientation="Vertical" Margin="25 15 15 25" >
+                <materialDesign:Card Width="436"  Margin="5 5 0 5" Padding="5" Background="#f1f2f6">
+                    <local:dates ></local:dates>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="5" Width="436"  Padding="5" Background="#f1f2f6">
+                    <local:dates ></local:dates>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="5" Width="436"  Padding="5" Background="#f1f2f6">
+                    <local:dates ></local:dates>
+                </materialDesign:Card>
+                <materialDesign:Card Margin="5"  Width="436" Padding="5" Background="#f1f2f6">
+                    <local:dates ></local:dates>
+                </materialDesign:Card>
+                
+            </WrapPanel>
+
+           <materialDesign:Card Height="151"  Margin="25 -10 20 0" Padding="25 10 25 10">
+               <materialDesign:Card.Background>
+                   <ImageBrush ImageSource="C:\Users\Alienware\RiderProjects\HealthAppUI\Images\bg2.jpg"></ImageBrush>
+               </materialDesign:Card.Background>
+               <Grid ShowGridLines="False">
+                   <Grid.RowDefinitions>
+                       <RowDefinition Height="Auto" />
+                       <RowDefinition Height="1*" />
+                       <RowDefinition Height="Auto" />
+                   </Grid.RowDefinitions>
+                   <Grid.ColumnDefinitions>
+                       <ColumnDefinition />
+                       <ColumnDefinition />
+                   </Grid.ColumnDefinitions>
+                   <TextBlock Grid.Column="0" Grid.Row="0" Foreground="White" TextWrapping="Wrap" FontSize="20" FontWeight="Bold" Text="Get your vaccine easily" />
+                   <TextBlock Grid.Column="0" VerticalAlignment="Center" Grid.Row="1" Text="Get everyone safe from COVID-19" Foreground="DimGray" />
+                   
+                   <Button Grid.Column="0" Grid.Row="2"  Style="{StaticResource CustomButtonStyle}" HorizontalAlignment="Left"  Height="30"   Width="150" Content="Go vaccination" FontWeight="DemiBold" Background="Transparent" BorderBrush="White" BorderThickness="1"  />
+
+               </Grid>
+            </materialDesign:Card>
+        </StackPanel>
+    </Grid>
+
+</Window>
